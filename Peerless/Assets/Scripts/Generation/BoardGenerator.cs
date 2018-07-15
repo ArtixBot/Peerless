@@ -9,11 +9,9 @@ public class BoardGenerator : MonoBehaviour {
     public RandInt roomWidth = new RandInt(5, 12);      // Range for room generation width.
     public RandInt roomHeight = new RandInt(3, 9);      // Range for room generation height.
     public RandInt numRooms = new RandInt(8, 15);       // Number of rooms generated per level.
-    public int numCorridors;                            // Number of corridors generated per level. Always numRooms - 1.
     public GameObject player;
-
+    
     private Room[] roomList;                            // Contains the list of rooms included per board.
-    private Corridor[] corridorList;                    // Contains the list of columns included per board.
 	private Tile[][] tiles;                               // A jagged array of tile types representing the board, like a grid.
     private GameObject boardHolder;                           // GameObject that acts as a container for all other tiles.
 	
@@ -25,7 +23,7 @@ public class BoardGenerator : MonoBehaviour {
 
         initalizeRoomsInBoard();
 
-        printBoard();
+        //printBoard();
 	}
 
 	void setUpBoard (int columns, int rows)
@@ -44,8 +42,7 @@ public class BoardGenerator : MonoBehaviour {
     }
 
     void createRooms(){
-        roomList = new Room[numRooms.Random];
-        corridorList = new Corridor[roomList.Length - 1];
+        roomList = new Room[1];
         Room initRoom = new Room();
         roomList[0] = initRoom;
         initRoom.setupStartingRoom(roomWidth, roomHeight, columns, rows);
@@ -62,7 +59,7 @@ public class BoardGenerator : MonoBehaviour {
         }
     }
     
-    void printBoard(){
+    public string printBoard(){
         string grid = "";
         for (int i = 0; i < tiles.Length; i++){
             for (int j = 0; j < tiles[i].Length; j++){
@@ -71,7 +68,8 @@ public class BoardGenerator : MonoBehaviour {
             grid += "n";
             grid = grid.Replace("n", System.Environment.NewLine);
         }
-        print(grid);
+        //print(grid);
+        return grid;
     }
 }
 
