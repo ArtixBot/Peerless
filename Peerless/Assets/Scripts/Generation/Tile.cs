@@ -10,9 +10,9 @@ public class Tile {
 	public Actor[] actors;
 	public Actor[] obstacles;
 
-	public Tile(int x, int y){
+	public Tile(int x, int y, string icon = "x"){
 		this.x = x;
 		this.y = y;
-		this.test = "x";
+		this.test = icon;
 	}
 }
