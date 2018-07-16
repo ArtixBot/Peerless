@@ -36,7 +36,7 @@ public class BoardGenerator : MonoBehaviour {
             // ... and set each tile array is the correct height.
             tiles[i] = new Tile[rows];
             for (int j = 0; j < tiles[i].Length; j++){
-                tiles[i][j] = new Tile(i, j, "C");
+                tiles[i][j] = new Tile(i, j, "#");
             }
         }
     }
@@ -51,9 +51,10 @@ public class BoardGenerator : MonoBehaviour {
 
     void initalizeRoomsInBoard(){
         foreach (Room room in roomList){
-            for (int i = room.yPos; i < room.yPos + room.roomHeight; i++){
-                for (int j = room.xPos; j < room.xPos + room.roomWidth; j++){
-                    tiles[i][j].test = "R";
+            for (int i = room.xPos; i < room.xPos + room.roomWidth; i++){
+                for (int j = room.yPos; j < room.yPos + room.roomHeight; j++){
+                    Debug.Log(i + " " + j);
+                    tiles[i][j].test = ".";
                 }
             }
         }
