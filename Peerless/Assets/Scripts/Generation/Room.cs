@@ -13,7 +13,16 @@ public class Room {
 		roomWidth = width.random;
 		roomHeight = height.random;
 
-		xPos = Mathf.RoundToInt(centerX / 2f - roomWidth / 2f);
-		yPos = Mathf.RoundToInt(centerY / 2f - roomHeight / 2f);
+		xPos = Mathf.RoundToInt(centerX / 2f);
+		yPos = Mathf.RoundToInt(centerY / 2f);
+	}
+
+	public void setupRoom(RandInt width, RandInt height, int maxX, int maxY){
+		roomWidth = width.random;
+		roomHeight = height.random;
+
+		xPos = Random.Range(0, maxX - roomWidth);
+		yPos = Random.Range(0, maxY - roomHeight);
+		//Debug.Log("Room being setup at (" + xPos + ", " + yPos + "), with a width of " + roomWidth + " and a height of " + roomHeight + ".");
 	}
 }
