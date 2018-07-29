@@ -16,6 +16,6 @@ public class ViewBoard : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		board.text = genBoard.printBoard();
+		board.text = genBoard.PrintBoard();
 	}
 }

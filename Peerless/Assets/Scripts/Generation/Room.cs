@@ -9,7 +9,7 @@ public class Room {
 	public int roomHeight;		// Height of the room.
 
 	// Generates the first starting room in the center (or as closely as possible) of the playing field.
-	public void setupStartingRoom(RandInt width, RandInt height, int centerX, int centerY){
+	public void SetupStartingRoom(RandInt width, RandInt height, int centerX, int centerY){
 		roomWidth = width.random;
 		roomHeight = height.random;
 
@@ -17,7 +17,7 @@ public class Room {
 		yPos = Mathf.RoundToInt(centerY / 2f);
 	}
 
-	public void setupRoom(RandInt width, RandInt height, int maxX, int maxY){
+	public void SetupRoom(RandInt width, RandInt height, int maxX, int maxY){
 		roomWidth = width.random;
 		roomHeight = height.random;
 
