@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BoardGenerator : MonoBehaviour {
 
-	public const int ROWS = 75;		                   		// Determines # of rows allowed for the board.
-	public const int ROW_LENGTH = 150;			            // Determines # of columns allowed for the board.
+	public int ROWS = 75;		                   		// Determines # of rows allowed for the board.
+	public int ROW_LENGTH = 150;			            // Determines # of columns allowed for the board.
 
 	// TUNNELER PARAMETERS ARE CONTAINED WITHIN TUNNELER.CS.
 	public const int NUM_TUNNELERS = 3;						// Determines # of tunnelers which will dig out an area.
@@ -22,7 +22,7 @@ public class BoardGenerator : MonoBehaviour {
 		boardHolder = new GameObject("BoardHolder");
 		SetUpBoard(ROWS, ROW_LENGTH);
 
-		Tunneler tunnelLad = new Tunneler (50, 50);
+		Tunneler tunnelLad = new Tunneler (25, 25);
 		tunnelLad.Dig (ref tiles);
 	}
 
