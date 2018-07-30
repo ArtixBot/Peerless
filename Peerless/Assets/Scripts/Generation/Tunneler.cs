@@ -9,8 +9,9 @@ public class Tunneler{
 
 	// TUNNELER PARAMETERS
 	public RandInt battery = new RandInt(50, 100);		// The tunneler is powered to dig {battery} tiles before being dismantled for eternity.
-	public RandInt corridorLength = new RandInt(4, 8);	// The tunneler digs straight for {corridorLength} tiles before changing directions.
+	public RandInt corridorLength = new RandInt(6, 8);	// The tunneler digs straight for {corridorLength} tiles before changing directions.
 
+	public static Random rng = new Random ();
 	public int x;										// Tunneler x-and-y position (aka rowLength-and-row position).
 	public int y;
 	public int lifespan;								// How far can the tunneler dig before it's killed off.
@@ -22,38 +23,32 @@ public class Tunneler{
 		this.y = y;
 		this.lifespan = battery.random;
 		this.corridor = corridorLength.random;
-		Debug.Log ("Instantiated with lifespan " + this.lifespan);
 	}
 
 	// The Tunneler is born! It digs in a certain direction, then rotates, continuing until killed.
-	public void Dig(ref Tile[][] board){
-		string dir = getDirection ();
+	public void Dig(ref Tile[][] board, string dir = null){
 		while (this.lifespan > 0) {
+			dir = getDirection (dir);
+			this.corridor = corridorLength.random;
 			while (this.corridor > 0) {
-				board [this.x] [this.y].test = ".";
+				board [this.y] [this.x].test = ".";
 				switch (dir) {
 				case "North":
 					this.y -= 1;
-					Debug.Log ("North");
 					break;
 				case "South":
 					this.y += 1;
-					Debug.Log ("South");
 					break;
 				case "West":
 					this.x -= 1;
-					Debug.Log ("West");
 					break;
 				case "East":
 					this.x += 1;
-					Debug.Log ("East");
 					break;
 				}
 				this.lifespan -= 1;
 				this.corridor -= 1;
 			}
-			this.corridor = corridorLength.random;
-			dir = getDirection (dir);
 		}
 	}
 
@@ -64,15 +59,12 @@ public class Tunneler{
 		switch (prevDirection) {
 		case "North":
 		case "South":
-			return direction [new Random ().Next (2, direction.Length)];	// Returns index 2/3.
-			break;
+			return direction [rng.Next (2, direction.Length)];
 		case "West":
 		case "East":
-			return direction [new Random ().Next (0, 2)];	// The direction array is 4 elements long, but Random().Next() gets from [0, 2), for effectively 0 or 1.
-			break;
+			return direction [rng.Next (0, 2)];		// Remember that Next() goes from [x, y) or [x, y-1]!
 		default:
 			return "North";
-			break;
 		}
 	}
 }
