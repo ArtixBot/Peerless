@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class BoardGenerator : MonoBehaviour {
 
-	public const int ROWS = 50;		                       		// Determines # of rows allowed for the board.
-	public const int ROW_LENGTH = 50;			               		// Determines # of columns allowed for the board.
-	public const int NUM_RECURSIONS = 3;							// Determines # of times to split up board for BSP.
+	public const int ROWS = 75;		                   		// Determines # of rows allowed for the board.
+	public const int ROW_LENGTH = 150;			            // Determines # of columns allowed for the board.
+
+	// TUNNELER PARAMETERS ARE CONTAINED WITHIN TUNNELER.CS.
+	public const int NUM_TUNNELERS = 3;						// Determines # of tunnelers which will dig out an area.
+
     public RandInt roomWidth = new RandInt(2, 5);      		// Range for room generation width.
     public RandInt roomHeight = new RandInt(2, 5);     		// Range for room generation height.
     public RandInt numRooms = new RandInt(8, 15);      		// Number of rooms generated per level.
-    public GameObject player;
     
-	private BinaryTree bspTree;		     	    	// Binary tree which holds the room locations based on grid divisions.
 	private Tile[][] tiles;             	                // A jagged array of tile types representing the board, like a grid.
     private GameObject boardHolder;         	            // GameObject that acts as a container for all other tiles.
 	
@@ -20,8 +21,9 @@ public class BoardGenerator : MonoBehaviour {
 	void Start () {
 		boardHolder = new GameObject("BoardHolder");
 		SetUpBoard(ROWS, ROW_LENGTH);
-		GenerateMap (tiles, 3);
-        //setupRooms();
+
+		Tunneler tunnelLad = new Tunneler (50, 50);
+		tunnelLad.Dig (ref tiles);
 	}
 
     // Sets up gameplay board.
@@ -50,15 +52,7 @@ public class BoardGenerator : MonoBehaviour {
                 tiles[y][x] = new Tile(y, x, "#");
             }
         }
-		int[] rootData = new int[]{0, 0, ROW_LENGTH, ROWS};
-		Node<int[]> rootNode = new Node<int[]> (rootData);
-		//bspTree.root = rootNode;
 	}
-
-	void GenerateMap(Tile[][] board, int recurse){
-
-	}
-
 
     // ===UI===
     // Used to make the board visible.
