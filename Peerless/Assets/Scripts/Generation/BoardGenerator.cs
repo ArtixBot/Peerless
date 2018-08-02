@@ -8,7 +8,7 @@ public class BoardGenerator : MonoBehaviour {
 	public int ROW_LENGTH = 150;			            // Determines # of columns allowed for the board.
 
 	// TUNNELER PARAMETERS ARE CONTAINED WITHIN TUNNELER.CS.
-	public const int NUM_TUNNELERS = 3;						// Determines # of tunnelers which will dig out an area.
+	public const int NUM_TUNNELERS = 1;						// Determines # of tunnelers which will dig out an area. Note that tunnelers summon more tunnelers so increasing can get out of hand!
 
     public RandInt roomWidth = new RandInt(2, 5);      		// Range for room generation width.
     public RandInt roomHeight = new RandInt(2, 5);     		// Range for room generation height.
@@ -19,11 +19,15 @@ public class BoardGenerator : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		float startUp = Time.realtimeSinceStartup;
 		boardHolder = new GameObject("BoardHolder");
+
 		SetUpBoard(ROWS, ROW_LENGTH);
 
-		Tunneler tunnelLad = new Tunneler (25, 25);
+
+		Tunneler tunnelLad = new Tunneler (100, 25);	
 		tunnelLad.Dig (ref tiles);
+		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
 	}
 
     // Sets up gameplay board.
