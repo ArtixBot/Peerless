@@ -8,11 +8,11 @@ using Random=System.Random;
 public class Tunneler{
 
 	// TUNNELER PARAMETERS
-	public const int BUFFER = 5;						// The tunneler will not dig tunnels within BUFFER tiles of the board's edge.
-	public const int CHANCE_INTERSECTION = 25;			// % chance to dig out an intersection (5x5 area) after corridor completion. If this occurs another tunneler is spawned!
-	public const float OPTIMAL_RATIO = 0.65f;			// Any possible tunneling direction which has >={OPTIMAL_RATIO}% tiles already dug out in the path will not be included.
-	public RandInt battery = new RandInt(250, 300);		// The tunneler is powered to dig {battery} tiles before being dismantled for eternity.
-	public RandInt corridorLength = new RandInt(5, 20);	// The tunneler digs straight for {corridorLength} tiles before changing directions.
+	public const int BUFFER = 3;						// The tunneler will not dig tunnels within BUFFER tiles of the board's edge.
+	public const int CHANCE_INTERSECTION = 20;			// % chance to dig out an intersection (5x5 area) after corridor completion. If this occurs another tunneler is spawned!
+	public const float OPTIMAL_RATIO = 0.60f;			// Any possible tunneling direction which has >={OPTIMAL_RATIO}% tiles already dug out in the path will not be included.
+	public RandInt battery = new RandInt(300, 350);		// The tunneler is powered to dig {battery} tiles before being dismantled for eternity.
+	public RandInt corridorLength = new RandInt(9, 15);	// The tunneler digs straight for {corridorLength} tiles before changing directions.
 
 	// Tunneler properties, do not modify.
 	public static Random rng = new Random ();
@@ -41,11 +41,11 @@ public class Tunneler{
 
 	// The Tunneler is born! It digs in a certain direction, then rotates, continuing until killed.
 	// The specific schedule for this Dig() is as follows:
-	// Dig/DigArea -> getDirection -> findApplicableDirection -> findBestDirection.
+	// Dig/DigArea -> GetDirection -> findApplicableDirection -> findBestDirection.
 	public void Dig(ref Tile[][] board, string dir = null){
 		while (this.lifespan > 0) {
 			this.corridorLen = corridorLength.random;
-			curDirection = getDirection (this.corridorLen, board[0].Length, board.Length, curDirection, board);
+			curDirection = GetDirection (this.corridorLen, board[0].Length, board.Length, curDirection, board);
 			if (curDirection == null) {			// If no optimal direction was found, terminate dig early.
 				this.lifespan = 0;
 				break;
@@ -87,7 +87,8 @@ public class Tunneler{
 			}
 		}
 		if (dimensions >= 2) {
-			Tunneler babyTunneler = new Tunneler (this.x, this.y, this.lifespan / 2);
+			// Newly spawned tunnelers have 50% (multiplicative) reduced lifespan compared to their parent's lifespan.
+			Tunneler babyTunneler = new Tunneler (this.x, this.y, (int)Math.Round(this.lifespan / 1.50));		
 			babyTunneler.Dig (ref board, babyTunneler.curDirection);
 		}
 	}
@@ -95,51 +96,51 @@ public class Tunneler{
 	// Change the direction of the tunneler.
 	// The tunneler should never choose a direction opposite its previous one. (ex.: If prev. dir. was S, don't go N).
 	// The direction the tunneler chooses is based on the number of already-dug spaces (minimizing those) and board boundaries (completely avoids those).
-	public string getDirection(int length, int limitX, int limitY, string x, Tile[][] board){
+	public string GetDirection(int length, int limitX, int limitY, string x, Tile[][] board){
 		List<string> dirArray = new List<string>();
 		switch (x) {
 		case "N":
 			if (this.y - length >= BUFFER) {
-				if (digRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
+				if (DigRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
 			}
 			if (this.x - length >= BUFFER) {
-				if (digRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
+				if (DigRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
 			}
 			if (this.x + length < limitX - BUFFER) {
-				if (digRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
+				if (DigRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
 			}
 			break;
 		case "S":
 			if (this.y + length < limitY - BUFFER) {
-				if (digRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
+				if (DigRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
 			}
 			if (this.x - length >= BUFFER) {
-				if (digRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
+				if (DigRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
 			}
 			if (this.x + length < limitX - BUFFER) {
-				if (digRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
+				if (DigRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
 			}
 			break;
 		case "W":
 			if (this.y - length >= BUFFER) {
-				if (digRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
+				if (DigRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
 			}
 			if (this.y + length < limitY - BUFFER) {
-				if (digRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
+				if (DigRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
 			}
 			if (this.x - length >= BUFFER) {
-				if (digRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
+				if (DigRatio (board, length, "W") < OPTIMAL_RATIO) { dirArray.Add ("W"); }
 			}
 			break;
 		case "E":
 			if (this.y - length >= BUFFER) {
-				if (digRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
+				if (DigRatio (board, length, "N") < OPTIMAL_RATIO) { dirArray.Add ("N"); }
 			}
 			if (this.y + length < limitY - BUFFER) {
-				if (digRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
+				if (DigRatio (board, length, "S") < OPTIMAL_RATIO) { dirArray.Add ("S"); }
 			}
 			if (this.x + length < limitX - BUFFER) {
-				if (digRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
+				if (DigRatio (board, length, "E") < OPTIMAL_RATIO) { dirArray.Add ("E"); }
 			}
 			break;
 		}
@@ -152,7 +153,7 @@ public class Tunneler{
 
 	// Given a direction, read through the relevant board sections and returns a ratio of already-dug tiles divided by direction length.
 	// findApplicableDirection() will compare this ratio to a provided OPTIMAL_RATIO parameter to determine if this corridor direction should be chosen.
-	public double digRatio(Tile[][] board, int corridorLength, string direction){
+	public double DigRatio(Tile[][] board, int corridorLength, string direction){
 		float occupiedTiles = 0.0f;
 		switch(direction){
 		case "N":
@@ -176,7 +177,6 @@ public class Tunneler{
 			}
 			break;
 		}
-		Debug.Log (occupiedTiles / corridorLength);
 		return occupiedTiles / corridorLength;
 	}
 }
