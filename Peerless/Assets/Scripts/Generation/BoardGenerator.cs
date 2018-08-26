@@ -27,6 +27,9 @@ public class BoardGenerator : MonoBehaviour {
 
 		Tunneler tunnelLad = new Tunneler (100, 25);	
 		tunnelLad.Dig (ref tiles);
+
+		RoomTunneler testRoom = new RoomTunneler (100, 25);
+		testRoom.Activate (ref tiles);
 		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
 	}
 
@@ -53,7 +56,7 @@ public class BoardGenerator : MonoBehaviour {
             // We now have an array of {rows} arrays, with each of those arrays of length {rowLength}.
             tiles[y] = new Tile[ROW_LENGTH];
             for (int x = 0; x < tiles[y].Length; x++){
-                tiles[y][x] = new Tile(y, x, "#");
+                tiles[y][x] = new Tile(y, x);
             }
         }
 	}
@@ -64,7 +67,16 @@ public class BoardGenerator : MonoBehaviour {
         string grid = "";
         for (int i = 0; i < tiles.Length; i++){
             for (int j = 0; j < tiles[i].Length; j++){
-                grid += tiles[i][j].test;
+                //grid += tiles[i][j].test;
+				if (tiles [i] [j].property == Tile.TileState.IS_FLOOR) {
+					grid += ".";
+				} else if (tiles [i] [j].property == Tile.TileState.IS_WALL) {
+					grid += "#";
+				} else if (tiles [i] [j].property == Tile.TileState.IS_DOOR) {
+					grid += "D";
+				} else if (tiles [i] [j].property == Tile.TileState.TEST) {
+					grid += "T";
+				}
             }
             grid += "n";
             grid = grid.Replace("n", System.Environment.NewLine);

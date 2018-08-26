@@ -6,8 +6,8 @@ using UnityEngine.UI;
 // THIS CLASS SHOULD BE USED FOR TESTING PURPOSES RIGHT NOW.
 public class ViewBoard : MonoBehaviour {
 
-	public Text board;
-	public BoardGenerator genBoard;
+	public Text boardText;
+	public BoardGenerator boardGen;
 
 
 	// Use this for initialization
@@ -16,6 +16,6 @@ public class ViewBoard : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		board.text = genBoard.PrintBoard();
+		boardText.text = boardGen.PrintBoard();
 	}
 }

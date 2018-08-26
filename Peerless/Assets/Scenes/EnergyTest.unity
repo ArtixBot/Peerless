@@ -137,7 +137,7 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 200564271}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -146,7 +146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 12.2, y: -12.2}
+  m_AnchoredPosition: {x: 12.200012, y: -12.199997}
   m_SizeDelta: {x: 1181.3, y: 662.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &200564273
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.86892164, b: 0.3537736, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -200,8 +200,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37677d929aed60146a8525b57148b58e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 200564273}
-  genBoard: {fileID: 1269499235}
+  boardText: {fileID: 200564273}
+  boardGen: {fileID: 1269499235}
 --- !u!1 &341192052
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +344,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -445,7 +445,7 @@ GameObject:
   - component: {fileID: 1269499236}
   - component: {fileID: 1269499235}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Board Generator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,8 +462,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9446ef5e13866e409aab1237d90f85a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ROWS: 45
-  ROW_LENGTH: 200
 --- !u!4 &1269499236
 Transform:
   m_ObjectHideFlags: 0
