@@ -8,6 +8,8 @@ using Random=System.Random;
 // The tunneler digs corridors. For room tunneler adjustments, check RoomTunneler.cs.
 public class Tunneler{
 
+	public BoardGenerator board;
+
 	// TUNNELER PARAMETERS
 	public const int BUFFER = 4;							// The tunneler will not dig tunnels within {BUFFER} tiles of the board's edge.
 	public const int CHANCE_INTERSECTION = 25;				// % chance to dig out an intersection (5x5 area) after corridor completion. If this occurs another tunneler is spawned!
@@ -76,6 +78,9 @@ public class Tunneler{
 				DigArea (ref board, this.y, this.x, 2);
 			}
 		}
+		int[] coordinates = { this.x, this.y };
+
+		BoardGenerator.RoomDiggers.Add (coordinates);		// Attempt to end a tunneler with a room by adding coordinates for a roomtunneler.
 	}
 
 	// Dig out a (dimension * 2 + 1) x (dimension * 2 + 1) area from current position.
@@ -95,6 +100,7 @@ public class Tunneler{
 			// Newly spawned tunnelers have 0.5x lifespan compared to their parent's lifespan.
 			Tunneler babyTunneler = new Tunneler (this.x, this.y, (int)Math.Round(this.lifespan * NEW_TUNNELER_LIFESPAN));		
 			babyTunneler.Dig (ref board);
+			BoardGenerator.RoomDiggers.Add (new int[] {this.x, this.y});
 		}
 	}
 		

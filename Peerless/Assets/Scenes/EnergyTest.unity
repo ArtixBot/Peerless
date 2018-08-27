@@ -197,11 +197,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 200564271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37677d929aed60146a8525b57148b58e, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b4420f3d7ca9fa4a961430b6b51f38a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardText: {fileID: 200564273}
   boardGen: {fileID: 1269499235}
+  boardText: {fileID: 200564273}
 --- !u!1 &341192052
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,13 +8,15 @@ public class BoardGenerator : MonoBehaviour {
 	public const int ROW_LENGTH = 200;			            // Determines # of columns allowed for the board.
 
 	// TUNNELER PARAMETERS ARE CONTAINED WITHIN TUNNELER.CS.
+	// ROOM TUNNELER PARAMETERS ARE CONTAINED WITHIN ROOMTUNNELER.CS
 	public const int NUM_TUNNELERS = 1;						// Determines # of tunnelers which will dig out an area. Note that tunnelers summon more tunnelers so increasing can get out of hand!
 
     public RandInt roomWidth = new RandInt(2, 5);      		// Range for room generation width.
     public RandInt roomHeight = new RandInt(2, 5);     		// Range for room generation height.
     public RandInt numRooms = new RandInt(8, 15);      		// Number of rooms generated per level.
-    
-	private Tile[][] tiles;             	                // A jagged array of tile types representing the board, like a grid.
+
+	public static List<int[]> RoomDiggers = new List<int[]> ();	// Contains a list of coordinates. Room tunnelers will be created and activated at these coordinates.
+	public Tile[][] tiles;             	                // A jagged array of tile types representing the board, like a grid.
     private GameObject boardHolder;         	            // GameObject that acts as a container for all other tiles.
 	
 	// Use this for initialization
@@ -31,6 +33,12 @@ public class BoardGenerator : MonoBehaviour {
 		RoomTunneler testRoom = new RoomTunneler (100, 25);
 		testRoom.Activate (ref tiles);
 		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
+
+		for (int i = 0; i < RoomDiggers.Count; i++) {
+			//Debug.Log (RoomDiggers [i] [0] + " " + RoomDiggers [i] [1]);
+			RoomTunneler roomTunnel = new RoomTunneler (RoomDiggers [i] [0], RoomDiggers [i] [1]);
+			roomTunnel.Activate (ref tiles);
+		}
 	}
 
     // Sets up gameplay board.
@@ -60,29 +68,5 @@ public class BoardGenerator : MonoBehaviour {
             }
         }
 	}
-
-    // ===UI===
-    // Used to make the board visible.
-    public string PrintBoard(){
-        string grid = "";
-        for (int i = 0; i < tiles.Length; i++){
-            for (int j = 0; j < tiles[i].Length; j++){
-                //grid += tiles[i][j].test;
-				if (tiles [i] [j].property == Tile.TileState.IS_FLOOR) {
-					grid += ".";
-				} else if (tiles [i] [j].property == Tile.TileState.IS_WALL) {
-					grid += "#";
-				} else if (tiles [i] [j].property == Tile.TileState.IS_DOOR) {
-					grid += "D";
-				} else if (tiles [i] [j].property == Tile.TileState.TEST) {
-					grid += "T";
-				}
-            }
-            grid += "n";
-            grid = grid.Replace("n", System.Environment.NewLine);
-        }
-        //print(grid);
-        return grid;
-    }
 }
 

@@ -53,20 +53,13 @@ public class RoomTunneler{
 			this.y += modY;
 		}
 		board [this.y] [this.x].property = Tile.TileState.TEST;
-
-		int[][] borders = ScanBorders (ref board, this.curDirection);
-		if (RequirementCheck (borders)) {
-			DigOut (ref board, borders);
-			//Debug.Log ("True");
-		} else {
-			//Debug.Log ("False");
-		}
+		ScanAndDig (ref board, this.curDirection);
 	}
 
 	// Go one tile past the door; scan in all four cardinal directions to get overall theoretical width and height.
 	// Assuming prerequisites are met, build the room leaving space for walls.
 	// TODO: adjust things so that it doesn't sound like a fucking Trump speech
-	public int[][] ScanBorders(ref Tile[][] board, char direction){
+	public void ScanAndDig(ref Tile[][] board, char direction){
 		int height = 0, up = 0, down = 0;
 		int width = 0, left = 0, right = 0;
 		int doorX = this.x;
@@ -86,39 +79,45 @@ public class RoomTunneler{
 			this.x += 1;
 			break;
 		}
-		if (!IsWall (board, this.x, this.y) && rng.Next (0, 100) < CHANCE_EXTRA_DOORS) {
+		if (!IsWall (board, this.x, this.y) && this.x > 0 && this.x < board[0].Length && this.y > 0 && this.y < board.Length && rng.Next (0, 100) < CHANCE_EXTRA_DOORS) {
 			// Seems we've hit another floor tile or door. Roll for CHANCE_EXTRA_DOOR to possibly place, then terminate self.
 			board [doorY] [doorX].property = Tile.TileState.IS_DOOR;
-			return null;
+			return;
 		} else {
 			int[] widthCoords;
 			int[] heightCoords;
 			if (direction == 'N' || direction == 'S') {
 				widthCoords = ScanWidth (board, this.x, this.y);
-				width = widthCoords [0]; left = widthCoords [1]; right = widthCoords [2];
+				width = widthCoords [0] + 1; left = widthCoords [1]; right = widthCoords [2];
 				if (direction == 'N') {
 					up = Math.Min (DirectionalScan (board, this.x - left, this.y - 1, 'N'), DirectionalScan (board, this.x + right, this.y - 1, 'N'));
-					height = up;
+					height = up + 1;
 				} else {
 					down = Math.Min (DirectionalScan (board, this.x - left, this.y + 1, 'S'), DirectionalScan (board, this.x + right, this.y + 1, 'S'));
-					height = down;
+					height = down + 1;
 				}
 				heightCoords = new int[] {height, up, down};
 			} else {
 				heightCoords = ScanHeight (board, this.x, this.y);
-				height = heightCoords [0]; up = heightCoords [1]; down = heightCoords [2];
+				height = heightCoords [0] + 1; up = heightCoords [1]; down = heightCoords [2];
 				if (direction == 'W') {
 					left = Math.Min (DirectionalScan (board, this.x - 1, this.y + up, 'W'), DirectionalScan (board, this.x - 1, this.y - down, 'W'));
-					width = left;
+					width = left + 1;
 				} else {
 					right = Math.Min (DirectionalScan (board, this.x + 1, this.y + up, 'E'), DirectionalScan (board, this.x + 1, this.y - down, 'E'));
-					width = right;
+					width = right + 1;
 				}
 				widthCoords = new int[]{ width, left, right };
 			}
 			int[][] borders = { widthCoords, heightCoords };
 			//Debug.Log ("Direction of input: " + direction + ". Width: " + borders [0] [0] + ", left and right components are " + borders[0][1] + " " + borders[0][2] + ". Height: " + borders[1][0] + ", up and down components are " + borders[1][1] + " " + borders[1][2] + ".");
-			return borders;
+			if (RequirementCheck (borders)) {
+				DigOut (ref board, borders);
+				board [doorY] [doorX].property = Tile.TileState.IS_DOOR;		// If minimum requirements not met, return the testing tile back to normal.
+			} else {
+				board [doorY] [doorX].property = Tile.TileState.IS_WALL;		// If minimum requirements not met, return the testing tile back to normal.
+			}
+			return;
 		}
 	}
 
@@ -138,7 +137,7 @@ public class RoomTunneler{
 		while (IsWall (board, x + (right + 1), y) && IsWall (board, x + (right + 1), y - 1) && IsWall (board, x + (right + 1), y + 1)) {
 			right += 1;
 		}
-		while (left + right - 1 > MAX_WIDTH) {			// -1 for buffer tile that we start on.
+		while (left + right > MAX_WIDTH) {
 			// Prevent rooms from being like 99% left, 1% right. Or something like that.
 			if (left - right >= IMBALANCE_TOLERANCE) {
 				left -= 1;
@@ -167,7 +166,7 @@ public class RoomTunneler{
 		while (IsWall (board, x, y + (down + 1)) && IsWall (board, x - 1, y + (down + 1)) && IsWall (board, x + 1, y + (down + 1))) {
 			down += 1;
 		}
-		while (up + down - 1 > MAX_HEIGHT) {			// -1 for buffer tile that we start on.
+		while (up + down > MAX_HEIGHT) {
 			// Prevent rooms from being like 99% left, 1% right. Or something like that.
 			if (up - down >= IMBALANCE_TOLERANCE) {
 				up -= 1;
@@ -190,22 +189,22 @@ public class RoomTunneler{
 		int dirLength = 0;
 		switch (direction) {
 		case 'N':
-			while (IsWall (board, x, y - (dirLength + 1)) && dirLength < MAX_HEIGHT) {
+			while (IsWall (board, x, y - (dirLength + 1)) && dirLength < MAX_HEIGHT - 1) {
 				dirLength += 1;
 			}
 			break;
 		case 'S':
-			while (IsWall (board, x, y + dirLength + 1) && dirLength < MAX_HEIGHT) {
+			while (IsWall (board, x, y + dirLength + 1) && dirLength < MAX_HEIGHT - 1) {
 				dirLength += 1;
 			}
 			break;
 		case 'W':
-			while (IsWall (board, x - (dirLength + 1), y) && dirLength < MAX_WIDTH) {
+			while (IsWall (board, x - (dirLength + 1), y) && dirLength < MAX_WIDTH - 1) {
 				dirLength += 1;
 			}
 			break;
 		case 'E':
-			while (IsWall (board, x + dirLength + 1, y) && dirLength < MAX_WIDTH) {
+			while (IsWall (board, x + dirLength + 1, y) && dirLength < MAX_WIDTH - 1) {
 				dirLength += 1;
 			}
 			break;
@@ -233,7 +232,7 @@ public class RoomTunneler{
 	public void DigOut(ref Tile[][] board, int[][] dimensions){
 		for (int i = -dimensions [0] [1]; i <= dimensions [0] [2]; i++) {
 			for (int j = -dimensions [1] [1]; j <= dimensions [1] [2]; j++) {
-				board [this.y + j][this.x + i] .property = Tile.TileState.TEST;
+				board [this.y + j][this.x + i] .property = Tile.TileState.IS_FLOOR;
 			}
 		}
 	}
