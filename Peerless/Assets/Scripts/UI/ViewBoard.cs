@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // THIS CLASS SHOULD BE USED FOR TESTING PURPOSES RIGHT NOW.
-public class ViewBoardTile : MonoBehaviour {
+public class ViewBoard : MonoBehaviour {
 
 	//public Tilemap boardMap;
 	public BoardGenerator boardGen;
@@ -39,5 +39,22 @@ public class ViewBoardTile : MonoBehaviour {
 		}
 		//print(grid);
 		return grid;
+	}
+
+	void renderBoardTile(Tile[][] board){
+		for (int x = 0; x < board [0].Length; x++) {
+			for (int y = 0; y < board.Length; y++) {
+				switch (board [y] [x].property) {
+				case Tile.TileState.IS_WALL:
+					break;
+				case Tile.TileState.IS_FLOOR:
+					break;
+				case Tile.TileState.IS_DOOR:
+					break;
+				case Tile.TileState.TEST:
+					break;
+				}
+			}
+		}
 	}
 }

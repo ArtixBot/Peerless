@@ -16,6 +16,8 @@ public class BoardGenerator : MonoBehaviour {
     public RandInt numRooms = new RandInt(8, 15);      		// Number of rooms generated per level.
 
 	public static List<int[]> RoomDiggers = new List<int[]> ();	// Contains a list of coordinates. Room tunnelers will be created and activated at these coordinates.
+
+	public static List<int[]> ListOfRooms = new List<int[]> ();	// Contains a list of all generated rooms. Each room may be subject to prefab generation.
 	public Tile[][] tiles;             	                // A jagged array of tile types representing the board, like a grid.
     private GameObject boardHolder;         	            // GameObject that acts as a container for all other tiles.
 	
@@ -26,19 +28,16 @@ public class BoardGenerator : MonoBehaviour {
 
 		SetUpBoard(ROWS, ROW_LENGTH);
 
-
 		Tunneler tunnelLad = new Tunneler (100, 25);	
 		tunnelLad.Dig (ref tiles);
-
-		RoomTunneler testRoom = new RoomTunneler (100, 25);
-		testRoom.Activate (ref tiles);
-		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
 
 		for (int i = 0; i < RoomDiggers.Count; i++) {
 			//Debug.Log (RoomDiggers [i] [0] + " " + RoomDiggers [i] [1]);
 			RoomTunneler roomTunnel = new RoomTunneler (RoomDiggers [i] [0], RoomDiggers [i] [1]);
 			roomTunnel.Activate (ref tiles);
 		}
+
+		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
 	}
 
     // Sets up gameplay board.
