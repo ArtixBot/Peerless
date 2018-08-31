@@ -9,12 +9,13 @@ using Random=System.Random;
 public class RoomTunneler{
 
 	// ROOM TUNNELER PARAMETERS
-	public const int MIN_WIDTH = 2;					// Room borders must be at minimum length [MIN_WIDTH] for generation.
-	public const int MIN_HEIGHT = 2;				// Same as above but for height instead.
+	public const int MIN_WIDTH = 3;					// Room borders must be at minimum length [MIN_WIDTH] for generation.
+	public const int MIN_HEIGHT = 3;				// Same as above but for height instead.
 	public const int MAX_WIDTH = 14;				// Room borders must be at maximum length [MAX_WIDTH]. Room length itself randomly vaiies: [MIN_WIDTH] <= value <= [MAX_WIDTH].
 	public const int MAX_HEIGHT = 8;				// Same as above but for height instead.
-	public const int IMBALANCE_TOLERANCE = 3;		// The higher the number, the more imbalance tolerance--so a door's entrance could split the room, 35% left and 65% right.
-	public const int CHANCE_EXTRA_DOORS = 75;		// If a room is dug out, there's a [CHANCE_EXTRA_DOORS]% chance to dig additional doors randomly along the border.
+	public const int IMBALANCE_TOLERANCE = 5;		// The higher the number, the more imbalance tolerance--so a door's entrance could split the room, 35% left and 65% right.
+	public const int CHANCE_EXTRA_DOOR = 25;		// If a room is dug out, there's a [CHANCE_EXTRA_DOORS]% chance to dig additional doors randomly along the border.
+	public const int CHANCE_NEW_ROOM = 50;			// [CHANCE_NEW_ROOM]% chance to spawn an additional room tunneler if a room was successfully dug out. 
 
 	// Room tunneler properties, do not modify.
 	public static Random rng = new Random ();
@@ -58,7 +59,7 @@ public class RoomTunneler{
 
 	// Go one tile past the door; scan in all four cardinal directions to get overall theoretical width and height.
 	// Assuming prerequisites are met, build the room leaving space for walls.
-	// TODO: adjust things so that it doesn't sound like a fucking Trump speech
+	// TODO: adjust things so that it doesn't sound like a Trump speech
 	public void ScanAndDig(ref Tile[][] board, char direction){
 		int height = 0, up = 0, down = 0;
 		int width = 0, left = 0, right = 0;
@@ -79,7 +80,7 @@ public class RoomTunneler{
 			this.x += 1;
 			break;
 		}
-		if (!IsWall (board, this.x, this.y) && this.x > 0 && this.x < board[0].Length && this.y > 0 && this.y < board.Length && rng.Next (0, 100) < CHANCE_EXTRA_DOORS) {
+		if (!IsWall (board, this.x, this.y) && this.x > 0 && this.x < board[0].Length && this.y > 0 && this.y < board.Length && rng.Next (0, 100) < CHANCE_EXTRA_DOOR) {		// Bloody out-of-bounds exceptions...
 			// Seems we've hit another floor tile or door. Roll for CHANCE_EXTRA_DOOR to possibly place, then terminate self.
 			board [doorY] [doorX].property = Tile.TileState.IS_DOOR;
 			return;
@@ -114,6 +115,8 @@ public class RoomTunneler{
 			if (RequirementCheck (borders)) {
 				DigOut (ref board, borders);
 				board [doorY] [doorX].property = Tile.TileState.IS_DOOR;		// If minimum requirements not met, return the testing tile back to normal.
+				// On room completion and successful roll, spawn a new room tunneler at the center of the room.
+				if (rng.Next(0, 100) < CHANCE_NEW_ROOM) {BoardGenerator.RoomDiggers.Add(new int[]{doorX - (left / 2) + (right / 2), doorY - (up / 2) + (down / 2)});}
 			} else {
 				board [doorY] [doorX].property = Tile.TileState.IS_WALL;		// If minimum requirements not met, return the testing tile back to normal.
 			}
@@ -137,7 +140,8 @@ public class RoomTunneler{
 		while (IsWall (board, x + (right + 1), y) && IsWall (board, x + (right + 1), y - 1) && IsWall (board, x + (right + 1), y + 1)) {
 			right += 1;
 		}
-		while (left + right > MAX_WIDTH) {
+		int room_w = rng.Next (MIN_WIDTH, MAX_WIDTH);		// Add variety to room sizes. We don't want rooms to necessarily take max available space that's open to them.
+		while (left + right > room_w) {			// Replace with MAX_WIDTH if things break. They shouldn't, but...
 			// Prevent rooms from being like 99% left, 1% right. Or something like that.
 			if (left - right >= IMBALANCE_TOLERANCE) {
 				left -= 1;
@@ -166,7 +170,8 @@ public class RoomTunneler{
 		while (IsWall (board, x, y + (down + 1)) && IsWall (board, x - 1, y + (down + 1)) && IsWall (board, x + 1, y + (down + 1))) {
 			down += 1;
 		}
-		while (up + down > MAX_HEIGHT) {
+		int room_h = rng.Next (MIN_HEIGHT, MAX_HEIGHT);
+		while (up + down > room_h) {
 			// Prevent rooms from being like 99% left, 1% right. Or something like that.
 			if (up - down >= IMBALANCE_TOLERANCE) {
 				up -= 1;

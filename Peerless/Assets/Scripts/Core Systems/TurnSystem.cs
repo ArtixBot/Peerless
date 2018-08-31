@@ -6,10 +6,13 @@ using UnityEngine;
 public class TurnSystem : MonoBehaviour {
 
 	Actor currentActor;
+
 	Queue<Actor> actionCycle = new Queue<Actor>();
 	private bool cycleTurns = false;
 
 	void Start(){
+		Actor player = new Actor (100, 25, "player", "Internationale", 3);
+		actionCycle.Enqueue (player);
 	}
 
 	// Update is called once per frame

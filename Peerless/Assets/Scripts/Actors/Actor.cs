@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Actor{
 
+	public BoardGenerator gameBoard;	// Necessary, presumably.
+
 	// Any field marked with a * in the comment should only be utilized by enemies.
 	public Sprite actorSprite;			// Unit sprite!
 
@@ -12,9 +14,13 @@ public class Actor{
 	private string desc;			// *Unit description.
 	private int free_actions;		// Number of Free Actions currently granted to user.
 	private int armor;				// *Armor level.
+	private int xPos;				// Current x-position of the unit.
+	private int yPos;				// Current y-position of the unit.
 	private List<Object> inventory;	// Inventory items held by unit.
 
-	public Actor(string i = "generic", string nm = "Generic Name", int amr = 0){
+	public Actor(int xPos, int yPos, string i = "generic", string nm = "Generic Name", int amr = 0){
+		this.xPos = xPos;
+		this.yPos = yPos;
 		id = i;
 		name = nm;
 		armor = amr;

@@ -2,26 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* =================
+ * BOARDGENERATOR.CS
+ * =================
+ * 
+ * I guess this is where the stew is made.
+ * Tunneler parameters are stored within Tunneler.cs.
+ * Room tunneler parameters are stored within RoomTunneler.cs (Yes, there's significant difference in how they operate...).
+ * 
+ * The board generator itself just initializes the 2d tile array, then spawns one tunneler.
+ * This one tunneler, like some sort of broodmother, spawns more tunnelers that attempt to go in other directions.
+ * As tunnelers tunnel (wow!) they insert coordinate markers into BoardGenerator's RoomDiggers list.
+ * Presumably, after all tunnelers are finished, BoardGenerator then iterates over RoomDiggers, spawning room tunnelers in all marked locations.
+ * The room tunnelers go off and build rooms. If successful they may also spawn more room tunnelers.
+ */
+
 public class BoardGenerator : MonoBehaviour {
 
 	public const int ROWS = 45;		                   		// Determines # of rows allowed for the board.
 	public const int ROW_LENGTH = 200;			            // Determines # of columns allowed for the board.
-
-	// TUNNELER PARAMETERS ARE CONTAINED WITHIN TUNNELER.CS.
-	// ROOM TUNNELER PARAMETERS ARE CONTAINED WITHIN ROOMTUNNELER.CS
 	public const int NUM_TUNNELERS = 1;						// Determines # of tunnelers which will dig out an area. Note that tunnelers summon more tunnelers so increasing can get out of hand!
-
-    public RandInt roomWidth = new RandInt(2, 5);      		// Range for room generation width.
-    public RandInt roomHeight = new RandInt(2, 5);     		// Range for room generation height.
-    public RandInt numRooms = new RandInt(8, 15);      		// Number of rooms generated per level.
 
 	public static List<int[]> RoomDiggers = new List<int[]> ();	// Contains a list of coordinates. Room tunnelers will be created and activated at these coordinates.
 
 	public static List<int[]> ListOfRooms = new List<int[]> ();	// Contains a list of all generated rooms. Each room may be subject to prefab generation.
-	public Tile[][] tiles;             	                // A jagged array of tile types representing the board, like a grid.
-    private GameObject boardHolder;         	            // GameObject that acts as a container for all other tiles.
+	public Tile[][] tiles;             	               			// A jagged array of tile types representing the board, like a grid.
+    private GameObject boardHolder;         	            	// GameObject that acts as a container for all other tiles.
 	
-	// Use this for initialization
+	// Commence stewmaking
 	void Start () {
 		float startUp = Time.realtimeSinceStartup;
 		boardHolder = new GameObject("BoardHolder");
@@ -37,15 +45,14 @@ public class BoardGenerator : MonoBehaviour {
 			roomTunnel.Activate (ref tiles);
 		}
 
+
 		print("Execution time of all board-gen scripts took " + (Time.realtimeSinceStartup - startUp) + " seconds.");
 	}
 
     // Sets up gameplay board.
-    /* Think of the board like this:
+	/* In a wholly unintuitive sense (to me, anyways), accessing the board should be board[y][x].
+	 * Think of the board like this:
     [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],

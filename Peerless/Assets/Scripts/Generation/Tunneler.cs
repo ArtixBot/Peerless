@@ -8,13 +8,12 @@ using Random=System.Random;
 // The tunneler digs corridors. For room tunneler adjustments, check RoomTunneler.cs.
 public class Tunneler{
 
-	public BoardGenerator board;
-
 	// TUNNELER PARAMETERS
 	public const int BUFFER = 4;							// The tunneler will not dig tunnels within {BUFFER} tiles of the board's edge.
 	public const int CHANCE_INTERSECTION = 25;				// % chance to dig out an intersection (5x5 area) after corridor completion. If this occurs another tunneler is spawned!
 	public const double NEW_TUNNELER_LIFESPAN = 0.5;		// Any child tunnelers have (multiplicative) {NEW_TUNNELER_LIFESPAN} of their parent's lifespan.
 	public const float OPTIMAL_RATIO = 0.55f;				// Any possible tunneling direction which has >={OPTIMAL_RATIO}% tiles already dug out in the path will not be included.
+	public const int CHANCE_SPAWN_ROOM_TUNNELER = 3;		// Every time a tile is successfully dug out there is a {CHANCE_SPAWN_ROOM_TUNNELER}% chance to add room tunneler spawn coordinates to the board generator.
 	public RandInt battery = new RandInt(300, 350);			// The tunneler is powered to dig {battery} tiles before being dismantled for eternity.
 	public RandInt corridorLength = new RandInt(8, 16);		// The tunneler digs straight for {corridorLength} tiles before changing directions.
 
@@ -93,6 +92,9 @@ public class Tunneler{
 			for (int j = -dimensions; j < dimensions + 1; j++) {
 				if (board [curY + j] [curX + i].property == Tile.TileState.IS_WALL) {
 					board [curY + j] [curX + i].property = Tile.TileState.IS_FLOOR;
+					if (rng.Next (0, 100) < CHANCE_SPAWN_ROOM_TUNNELER) {
+						BoardGenerator.RoomDiggers.Add (new int[] { this.x, this.y });
+					}
 				}
 			}
 		}
